@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/askverse
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - CONFLUENCE_URL=${CONFLUENCE_URL}
+      - CONFLUENCE_USERNAME=${CONFLUENCE_USERNAME}
+      - CONFLUENCE_API_TOKEN=${CONFLUENCE_API_TOKEN}
+      - PINECONE_API_KEY=${PINECONE_API_KEY}
+      - PINECONE_ENVIRONMENT=${PINECONE_ENVIRONMENT}
+      - WEATHER_API_KEY=${WEATHER_API_KEY}
+      - MAPS_API_KEY=${MAPS_API_KEY}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - JWT_ALGORITHM=${JWT_ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    command: uvicorn askverse.main:app --host 0.0.0.0 --port 8000 --reload
+
+  db:
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=askverse
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data: 
